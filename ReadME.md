@@ -15,7 +15,7 @@ To start the application, follow these steps:
     ```
 4. Start the application:
     ```bash
-    npm start
+    npm run start-api
     ```
 
 The application should now be running on `http://localhost:3000`.
@@ -29,5 +29,6 @@ The application should now be running on `http://localhost:3000`.
 
 2. Start the HTML file on port 8080:
     ```bash
-    http-server -p 8080
+    npm run start-web
+
     ```
