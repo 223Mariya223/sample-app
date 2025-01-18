@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample Test Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
+    h1, h2 { color: #333; }
+    .form-section, .list-section { margin-bottom: 30px; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    label { display: block; margin-bottom: 8px; font-weight: bold; }
+    input[type="text"], input[type="email"], input[type="file"] { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 10px 15px; background-color: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    table, th, td { border: 1px solid #ddd; }
+    th, td { padding: 12px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    ul { list-style-type: none; padding: 0; }
+    ul li { padding: 10px; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+  <h1>Test Page</h1>
+  
+  <!-- User Form -->
+  <section class="form-section">
+    <h2>User Form</h2>
+    <label for="username">Username:</label>
+    <input type="text" id="username" placeholder="Enter your username" required>
+    <label for="email">Email:</label>
+    <input type="email" id="email" placeholder="Enter your email" required>
+    <button id="submitUser">Add User</button>
+    <p id="userNotification" style="color: green; display: none;">User added successfully!</p>
+  </section>
+
+  <!-- User Table -->
+  <section>
+    <h2>User List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody"></tbody>
+    </table>
+  </section>
+
+  <!-- To-Do List -->
+  <section class="list-section">
+    <h2>To-Do List</h2>
+    <label for="newTask">Add a Task:</label>
+    <input type="text" id="newTask" placeholder="Enter a new task">
+    <button id="addTask">Add Task</button>
+    <ul id="taskList"></ul>
+  </section>
+
+  <!-- File Upload -->
+  <section>
+    <h2>File Upload</h2>
+    <input type="file" id="fileInput">
+    <button id="uploadFile">Upload</button>
+    <p id="uploadNotification" style="color: green; display: none;">File uploaded successfully!</p>
+  </section>
+
+  <script>
+    const apiUrl = 'http://localhost:3000/api';
+
+    // Fetch and display users
+    function fetchUsers() {
+      fetch(`${apiUrl}/users`)
+        .then(response => response.json())
+        .then(data => {
+          const userTableBody = document.getElementById('userTableBody');
+          userTableBody.innerHTML = '';
+          data.users.forEach(user => {
+            const row = `<tr>
+              <td>${user.id}</td>
+              <td>${user.name}</td>
+              <td>${user.email}</td>
+            </tr>`;
+            userTableBody.innerHTML += row;
+          });
+        });
+    }
+
+    // Add User
+    document.getElementById('submitUser').addEventListener('click', () => {
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      fetch(`${apiUrl}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: username, email })
+      }).then(response => response.json())
+        .then(() => {
+          document.getElementById('userNotification').style.display = 'block';
+          fetchUsers();
+        });
+    });
+
+    // Fetch and display tasks
+    function fetchTasks() {
+      fetch(`${apiUrl}/tasks`)
+        .then(response => response.json())
+        .then(data => {
+          const taskList = document.getElementById('taskList');
+          taskList.innerHTML = '';
+          data.tasks.forEach(task => {
+            const listItem = `<li>${task}</li>`;
+            taskList.innerHTML += listItem;
+          });
+        });
+    }
+
+    // Add Task
+    document.getElementById('addTask').addEventListener('click', () => {
+      const task = document.getElementById('newTask').value;
+      fetch(`${apiUrl}/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task })
+      }).then(() => fetchTasks());
+    });
+
+    // File Upload
+    document.getElementById('uploadFile').addEventListener('click', () => {
+      const fileInput = document.getElementById('fileInput');
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      fetch(`${apiUrl}/upload`, {
+        method: 'POST',
+        body: formData
+      }).then(response => response.json())
+        .then(() => {
+          document.getElementById('uploadNotification').style.display = 'block';
+        });
+    });
+
+    // Initialize Data
+    fetchUsers();
+    fetchTasks();
+  </script>
+</body>
+</html>
