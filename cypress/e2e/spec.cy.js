@@ -7,6 +7,7 @@ describe('Sample Webpage Testing', () => {
     // Visit the webpage before each test
     cy.visit('http://localhost:8080'); // Replace with the actual URL of your hosted `index.html`
   });
+  
   before(() => {
     // Ensure the file upload plugin is available
     Cypress.Commands.add('attachFile', { prevSubject: 'element' }, (subject, fileName) => {
